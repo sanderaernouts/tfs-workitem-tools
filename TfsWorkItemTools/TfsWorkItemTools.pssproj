@@ -31,10 +31,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="package.ps1" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="TfsWorkItemTools.psd1" />
     <Compile Include="TfsWorkItemTools.psm1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="NewFolder1\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="Build" />

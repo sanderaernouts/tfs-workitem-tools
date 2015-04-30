@@ -237,5 +237,5 @@ function VerifyWorkItemStoreSet {
 }
 
 #Export only functions that have a hypen (-)
-Export-Modulemember *-*
+Export-ModuleMember *-*
 
