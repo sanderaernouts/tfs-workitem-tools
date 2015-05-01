@@ -12,6 +12,16 @@ A PowerShell module to quickly edit work items in bulk, for instance when doing 
 - Test-Field
 
 ##Installation
+###Dependencies
+* Visual Studio Team Explorer 2013
+
+###Steps
+Go to https://github.com/sanderaernouts/tfs-workitem-tools/releases and download latest release of the TfsWorkItemTools.zip archive. Unzip the archive and run the install.ps1 script. This will place necesary files in your "%USERPROFILE%\Documents\WindowsPowerShell\Modules" folder.
+
+##Uninstalation
+Remove the TfsWorkItemTools folder from the following location "%USERPROFILE%\Documents\WindowsPowerShell\Modules"
+
+
 
 ##Usage
 Importing the module into your script:

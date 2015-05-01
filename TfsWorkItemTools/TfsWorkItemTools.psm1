@@ -13,7 +13,12 @@
 
 function Set-WorkItemStore
 {
-    param([string] $Collection, [Switch] $ByPassRules = $false)
+    param(
+        [Parameter(Mandatory=$True,Position=1)]
+        [string] $Collection, 
+        [Parameter(Mandatory=$False)]
+        [Switch] $ByPassRules = $false
+    )
 
     #load assemblies
 	[void][System.Reflection.Assembly]::LoadWithPartialName("Microsoft.TeamFoundation.Client") 
@@ -54,7 +59,7 @@ function Get-WorkItemStore
 function Get-WorkItem
 {
 	param(
-		[parameter(Mandatory)]
+		[Parameter(Mandatory=$True,Position=1)]
 		[string]$Query
 	)
 
@@ -90,9 +95,9 @@ function Get-WorkItem
 function Edit-WorkItem
 {
 	param(
-		[parameter(Mandatory)]
+		[Parameter(Mandatory=$True,Position=1)]
 	    $items,
-	    [parameter(Mandatory)] 
+	    [Parameter(Mandatory=$True,Position=2)]
 		$ScriptBlock
 	)
 
@@ -101,6 +106,8 @@ function Edit-WorkItem
 	$count = $items.count
 	Write-Verbose "Editing $count items"
 	$items | % {
+		#To edit fields the work item object must be openend
+		$_.Open();
 		Invoke-Command $ScriptBlock -ArgumentList $_
 	}
 }
@@ -121,7 +128,7 @@ function Edit-WorkItem
 function Save-WorkItem
 {
 	Param(
-		[parameter(Mandatory)]
+		[Parameter(Mandatory=$True,Position=1)]
 		$items
 	)
 
@@ -163,8 +170,11 @@ function Save-WorkItem
 #>
 function Set-FieldValue {
 	Param(
+        [Parameter(Mandatory=$True,Position=1)]
 		$WorkItem,
+        [Parameter(Mandatory=$True,Position=2)]
 		[string]$Name,
+        [Parameter(Mandatory=$True,Position=3)]
 		$Value
 	)
 
@@ -183,7 +193,9 @@ function Set-FieldValue {
 #>
 function Get-FieldValue {
 	Param(
+        [Parameter(Mandatory=$True,Position=1)]
 		$WorkItem,
+        [Parameter(Mandatory=$True,Position=2)]
 		$Name
 	)
 
@@ -202,7 +214,9 @@ function Get-FieldValue {
 #>
 function Test-Field {
 	Param(
+        [Parameter(Mandatory=$True,Position=1)]
 		$WorkItem,
+        [Parameter(Mandatory=$True,Position=2)]
 		[string]$Name
 	)
 

@@ -17,7 +17,7 @@ Try{
 	Copy-Item $PSScriptRoot\install.ps1 -Destination $packagingDir
 
 	#create a zip package
-	$zipFile = "$packageDir\TfsSecurityTools.zip"
+	$zipFile = "$packageDir\TfsWorkItemTools.zip"
 	if(Test-Path "$PSScriptRoot\..\TfsSecurityTools.zip")
 	{
 		Get-ChildItem -File $zipFile | Remove-Item
@@ -25,6 +25,9 @@ Try{
 	Add-Type -Assembly System.IO.Compression.FileSystem
     $compressionLevel = [System.IO.Compression.CompressionLevel]::Optimal
     [System.IO.Compression.ZipFile]::CreateFromDirectory($packagingDir,$zipFile, $compressionLevel, $false)
+
+    #open the package directory
+    explorer $packageDir
 }
 Catch [system.exception] {
     Write-Error $_
