@@ -73,7 +73,7 @@ function Get-WorkItem
 
 <#
   .SYNOPSIS    
-    Edits the selected work item using by executing the provided script block. The WorkItem object will be passed as the first parameter into the script block  
+    Edits the selected work item using by executing the provided script block. The WorkItem object will be passed as the first parameter into the script block. For each work item the WorkItem.Open() method will be invoked as well, this is necesary to be able to edit fields.
   .PARAMETER Items 
    One or more WorkItem objects 
   .PARAMETER ScriptBlock 
