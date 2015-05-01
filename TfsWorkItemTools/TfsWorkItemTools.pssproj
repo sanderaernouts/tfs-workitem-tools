@@ -35,8 +35,9 @@
     <Content Include="package.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TfsWorkItemTools.psd1" />
-    <Compile Include="TfsWorkItemTools.psm1" />
+    <Content Include="install.ps1" />
+    <Content Include="TfsWorkItemTools.psd1" />
+    <Content Include="TfsWorkItemTools.psm1" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="NewFolder1\" />

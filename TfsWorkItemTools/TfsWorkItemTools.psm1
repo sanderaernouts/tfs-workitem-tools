@@ -1,10 +1,10 @@
 <#
   .SYNOPSIS    
-    Sets the work item store to be used by this module. Work item store can be requested with the ByPassRules flag to allow you to bypass rule validation on save.  
+    Sets the work item store to be used by this module. This cmdlet must be executed before for instance querying TFS. The Work item store can be requested with the ByPassRules flag to allow you to bypass rule validation on save.  Note that you have to be a member of the [TEAM FOUNDATION]\Service Accounts group for this.
   .PARAMETER Collection 
    Collection URL, for example https://tfs.example.com/tfs/myCollection 
   .PARAMETER ByPassRules 
-   Allows you to bypass rule validation on save, default is $false 
+   Allows you to bypass rule validation on save, default is $false. This will allow you to save work items without TFS validating the work item rules. This might leave your work items in a state where they contain field errors which user have to fix before the next save. But for migration purposes this can be a very convenient option. You have to be a member of the [TEAM FOUNDATION]\Service Accounts group for this.
   .EXAMPLE   
    Set-WorkItemStore -Collection "https://tfs.example.com/tfs/myCollection" 
   .EXAMPLE   
@@ -33,7 +33,7 @@ function Set-WorkItemStore
 
 <#
   .SYNOPSIS    
-    Gets the work item store be used by this module. Note that you will have to run Set-WorkItemStore before running this command.
+    Gets the work item store used by this module. Note that you will have to run Set-WorkItemStore before running this command.
   .EXAMPLE   
    Get-WorkItemStore
 #>
@@ -41,6 +41,29 @@ function Get-WorkItemStore
 {
 	VerifyWorkItemStoreSet
 	return $Script:TFSWorkItemStore
+}
+
+<#
+  .SYNOPSIS    
+   Executes a work item query (WIQL) against the work item store set for this module. Depending on your query 0 or more work items will be returned. Note that Set-WorkItemStore must be called prior to this command.
+  .PARAMETER Query
+   A WIQL query 
+  .EXAMPLE   
+    Get-WorkItem -Query "SELECT [State], [Title] From WorkItems Where [Work Item Type] IN ('Bug', 'Product Backlog Item)' AND [Area Path] UNDER 'MyProject\'"
+#>
+function Get-WorkItem
+{
+	param(
+		[parameter(Mandatory)]
+		[string]$Query
+	)
+
+	VerifyWorkItemStoreSet
+
+	$store = $Script:TFSWorkItemStore
+	$workitems = $store.Query($Query)
+
+	return $workitems
 }
 
 <#
@@ -58,6 +81,11 @@ function Get-WorkItemStore
 		Write-Host $workitem.Title
 	} 
   .EXAMPLE   
+	Edit-WorkItem -items $items -ScriptBlock {
+		param($workitem)
+		$fieldValueToMigrate = Get-FieldValue $workitem "old.field"
+		Set-FieldValue $workitem "new.field" $fieldValueToMigrate
+	}
 #>
 function Edit-WorkItem
 {
@@ -79,7 +107,7 @@ function Edit-WorkItem
 
 <#
   .SYNOPSIS    
-    Saves one or more work items using the work item store set for this module. If more then 200 work item objects are passed at once the save operation is split into chunks of 200 to reduce save package sizes.
+    Saves one or more work items in a single batch save operation using the work item store set for this module. If more then 200 work item objects are passed at once the batch save operation is split into chunks of 200 to reduce save package sizes.
 
     Note that you will have to run Set-WorkItemStore before running this command.
   .PARAMETER Items 
@@ -131,9 +159,9 @@ function Save-WorkItem
   .PARAMETER Value
    The value to assign to the field, note that the value type should match the field type.
   .EXAMPLE   
-    Set-Field $workitem -Name 'Severity' -value '2 - Major'
+    Set-FieldValue $workitem -Name 'Severity' -value '2 - Major'
 #>
-function Set-Field {
+function Set-FieldValue {
 	Param(
 		$WorkItem,
 		[string]$Name,
@@ -151,9 +179,9 @@ function Set-Field {
   .PARAMETER Name
    Name or reference name of a field on the work item
   .EXAMPLE   
-    Set-Field $workitem -Name 'Severity' -value '2 - Major'
+    Set-FieldValue $workitem -Name 'Severity' -value '2 - Major'
 #>
-function Get-Field {
+function Get-FieldValue {
 	Param(
 		$WorkItem,
 		$Name
@@ -166,7 +194,7 @@ function Get-Field {
   .SYNOPSIS    
     Tests whether a field exists on a single work item object
   .PARAMETER WorkItem 
-   One or more WorkItem objects .
+   a WorkItem object.
   .PARAMETER Name
    Name or reference name of a field on the work item
   .EXAMPLE   
